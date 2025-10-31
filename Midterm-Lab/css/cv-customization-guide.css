@@ -1,0 +1,231 @@
+/* ============================================
+   QUICK CUSTOMIZATION GUIDE FOR CV PAGE
+   ============================================ */
+
+/* TO CHANGE YOUR PERSONAL DETAILS:
+   Open cv.html and search for these sections:
+   
+   1. Line ~60: Your name and basic info
+   2. Line ~100: Education details
+   3. Line ~180: Skills and proficiency levels
+   4. Line ~280: Work experience and projects
+   5. Line ~380: Contact information
+*/
+
+/* ============================================
+   COLOR CUSTOMIZATION
+   ============================================ */
+
+/* Main theme colors - Change these to customize the entire CV */
+:root {
+    --cv-primary: #5ccdbe;      /* Main teal color */
+    --cv-secondary: #4ecbbe;    /* Lighter teal */
+    --cv-dark: #4a2c4a;         /* Dark purple for headings */
+    --cv-text: #666;            /* Body text color */
+    --cv-light-bg: #f9f9f9;     /* Light background */
+}
+
+/* ============================================
+   HOVER EFFECT CUSTOMIZATION
+   ============================================ */
+
+/* To make hover effects faster/slower, adjust these values:
+   - Smaller numbers = faster
+   - Larger numbers = slower
+   Current: 0.4s (moderate speed)
+*/
+
+.cv-section-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Change 0.4s to 0.2s for faster, or 0.6s for slower */
+}
+
+.cv-section-content {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Content reveal speed */
+}
+
+/* ============================================
+   SKILL BAR PERCENTAGES
+   ============================================ */
+
+/* To adjust skill levels, change the width percentage in cv.html:
+   
+   Example in HTML:
+   <div class="skill-progress" style="width: 90%"></div>
+   
+   90% = Expert level
+   75% = Proficient
+   50% = Intermediate
+   25% = Beginner
+*/
+
+/* ============================================
+   SECTION VISIBILITY ON LOAD
+   ============================================ */
+
+/* By default, sections are collapsed and expand on hover.
+   To make a section always visible (not collapsible):
+   
+   1. Find the section in cv.html
+   2. Add class "always-visible" to .cv-section-card
+   3. Add this CSS rule below:
+*/
+
+.cv-section-card.always-visible .cv-section-content {
+    max-height: 2000px !important;
+    opacity: 1 !important;
+    padding: 40px !important;
+}
+
+/* ============================================
+   ICON CUSTOMIZATION
+   ============================================ */
+
+/* Section icons (emojis) can be changed in cv.html:
+   
+   👤 Personal Info (line ~70)
+   🎓 Education (line ~95)
+   💻 Skills (line ~175)
+   💼 Experience (line ~275)
+   📧 Contact (line ~375)
+   
+   Replace with any emoji from: https://emojipedia.org
+*/
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Current breakpoints:
+   - Desktop: > 1024px
+   - Tablet: 768px - 1024px
+   - Mobile: < 768px
+   
+   Adjust these in cv-styles.css if needed
+*/
+
+/* ============================================
+   ANIMATION SPEEDS
+   ============================================ */
+
+/* Icon rotation speed on hover */
+.cv-icon-wrapper {
+    transition: all 0.3s ease;
+    /* Change 0.3s to adjust rotation speed */
+}
+
+/* Card lift effect speed */
+.cv-section-card:hover {
+    transform: translateY(-5px);
+    /* Change -5px to adjust lift height */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+/* When printing the CV (Ctrl+P), certain elements are hidden.
+   To show/hide different elements when printing,
+   edit the @media print section in cv-styles.css (line ~580)
+*/
+
+/* ============================================
+   DOWNLOAD BUTTON
+   ============================================ */
+
+/* The PDF download button links to "cv.pdf" in the root folder.
+   Make sure your PDF file is named exactly "cv.pdf"
+   or update the link in cv.html line ~45:
+   
+   <a href="cv.pdf" download>
+*/
+
+/* ============================================
+   ADDING NEW SECTIONS
+   ============================================ */
+
+/* To add a new section (e.g., Certifications):
+   
+   1. Copy an existing section in cv.html
+   2. Change the data-section attribute
+   3. Update the icon and title
+   4. Add your content
+   5. It will automatically get the hover effects!
+*/
+
+/* Example template:
+<div class="cv-section-card" data-section="certifications">
+    <div class="cv-section-header">
+        <div class="cv-icon-wrapper">
+            <span class="cv-icon">🏆</span>
+        </div>
+        <h2 class="cv-section-title">Certifications</h2>
+        <span class="expand-hint">Hover to view details</span>
+    </div>
+    <div class="cv-section-content">
+        <!-- Your certification details here -->
+    </div>
+</div>
+*/
+
+/* ============================================
+   TIPS FOR BEST RESULTS
+   ============================================ */
+
+/*
+1. Keep section content concise and scannable
+2. Use consistent formatting across all sections
+3. Test hover effects on different screen sizes
+4. Ensure text is readable (good contrast)
+5. Update the PDF version to match HTML content
+6. Replace placeholder data with your real information
+7. Test printing to ensure it looks good on paper
+8. Check on mobile devices before submitting
+9. Validate HTML at https://validator.w3.org
+10. Ask someone to review for typos/errors
+*/
+
+/* ============================================
+   ACCESSIBILITY CHECKLIST
+   ============================================ */
+
+/*
+✅ Semantic HTML elements used
+✅ Alt text for images (if any added)
+✅ Keyboard navigation works
+✅ Color contrast meets WCAG standards
+✅ Focus indicators visible
+✅ Screen reader friendly
+✅ No flashing/seizure-inducing animations
+✅ Text resizable without breaking layout
+*/
+
+/* ============================================
+   COMMON ISSUES & FIXES
+   ============================================ */
+
+/*
+ISSUE: Sections won't expand on hover
+FIX: Check that cv-styles.css is properly linked in cv.html
+
+ISSUE: Colors don't match the main site
+FIX: Verify you're using the same color values (#5ccdbe)
+
+ISSUE: Page looks broken on mobile
+FIX: Test in responsive mode (F12 > Toggle device toolbar)
+
+ISSUE: PDF download doesn't work
+FIX: Make sure cv.pdf exists in the same folder as cv.html
+
+ISSUE: Icons don't show
+FIX: Emojis should work in all modern browsers, try different ones
+
+ISSUE: Hover effects are too slow/fast
+FIX: Adjust transition duration values (see line 20 above)
+*/
+
+/* ============================================
+   END OF CUSTOMIZATION GUIDE
+   ============================================ */
