@@ -180,11 +180,11 @@
     <nav class="navbar navbar-light bg-white shadow-sm">
         <div class="container">
             <div class="d-flex align-items-center gap-3">
-                <a href="index.html" class="btn btn-outline-secondary btn-lg">
+                <a href="../index.html" class="btn btn-outline-secondary btn-lg">
                     ← Back
                 </a>
-                <a class="navbar-brand mb-0" href="index.html">
-                    <img src="images/logo-tooth.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top me-2">
+                <a class="navbar-brand mb-0" href="../index.html">
+                    <img src="../images/logo-tooth.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top me-2">
                     BEDENTIST
                 </a>
             </div>
@@ -374,7 +374,7 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-primary w-100" id="placeOrderBtn" disabled>
-                            Place Order - Rs. 15,000
+                            Place Order - <span id="orderBtnTotal">$298.70</span>
                         </button>
                         <p class="text-muted text-center mt-3 mb-0 small">
                             🔒 Your payment information is secure and encrypted
@@ -393,25 +393,37 @@
                         <div class="card-body">
                             <!-- Products -->
                             <div class="product-item">
-                                <div class="product-info">
-                                    <span class="product-qty">x1</span>
-                                    <span>Dental Cleaning Service</span>
+                                <div class="form-check">
+                                    <input class="form-check-input item-checkbox" type="checkbox" id="item1" data-price="100" data-qty="1" checked>
+                                    <label class="form-check-label" for="item1">
+                                        <div class="d-flex justify-content-between w-100">
+                                            <span><span class="text-muted">x1</span> Dental Cleaning Service</span>
+                                            <span class="fw-bold ms-3">$100</span>
+                                        </div>
+                                    </label>
                                 </div>
-                                <span class="fw-bold">Rs. 5,000</span>
                             </div>
                             <div class="product-item">
-                                <div class="product-info">
-                                    <span class="product-qty">x2</span>
-                                    <span>Teeth Whitening Session</span>
+                                <div class="form-check">
+                                    <input class="form-check-input item-checkbox" type="checkbox" id="item2" data-price="160" data-qty="2" checked>
+                                    <label class="form-check-label" for="item2">
+                                        <div class="d-flex justify-content-between w-100">
+                                            <span><span class="text-muted">x2</span> Teeth Whitening Session</span>
+                                            <span class="fw-bold ms-3">$160</span>
+                                        </div>
+                                    </label>
                                 </div>
-                                <span class="fw-bold">Rs. 8,000</span>
                             </div>
                             <div class="product-item">
-                                <div class="product-info">
-                                    <span class="product-qty">x1</span>
-                                    <span>Consultation Fee</span>
+                                <div class="form-check">
+                                    <input class="form-check-input item-checkbox" type="checkbox" id="item3" data-price="30" data-qty="1" checked>
+                                    <label class="form-check-label" for="item3">
+                                        <div class="d-flex justify-content-between w-100">
+                                            <span><span class="text-muted">x1</span> Consultation Fee</span>
+                                            <span class="fw-bold ms-3">$30</span>
+                                        </div>
+                                    </label>
                                 </div>
-                                <span class="fw-bold">Rs. 1,500</span>
                             </div>
 
                             <hr class="my-3">
@@ -430,20 +442,20 @@
                             <!-- Totals -->
                             <div class="total-row">
                                 <span>Subtotal</span>
-                                <span class="fw-semibold">Rs. 14,500</span>
+                                <span class="fw-semibold" id="subtotalAmount">$290.00</span>
                             </div>
                             <div class="total-row">
                                 <span>Shipping</span>
-                                <span class="fw-semibold">Rs. 0</span>
+                                <span class="fw-semibold" id="shippingAmount">$0.00</span>
                             </div>
                             <div class="total-row">
                                 <span>Tax (GST 3%)</span>
-                                <span class="fw-semibold">Rs. 500</span>
+                                <span class="fw-semibold" id="taxAmount">$8.70</span>
                             </div>
                             
                             <div class="total-row grand-total">
                                 <span>Grand Total</span>
-                                <span>Rs. 15,000</span>
+                                <span id="grandTotalAmount">$298.70</span>
                             </div>
 
                             <!-- Trust Badges -->
