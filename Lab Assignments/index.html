@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Assignments - Web Tech 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .assignments {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .assignment-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid #667eea;
+        }
+        
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .assignment-card h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        
+        .assignment-card p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Lab Assignments</h1>
+        <p class="subtitle">Web Technologies 3 - BCS-118</p>
+        
+        <div class="assignments">
+            <div class="assignment-card">
+                <h2>📝 Assignment 1</h2>
+                <p><strong>Checkout Page</strong> - A responsive e-commerce checkout page with form validation and modern design.</p>
+                <a href="Assignment1-Checkout-Page/checkout.html" class="btn">View Assignment →</a>
+            </div>
+            
+            <div class="assignment-card">
+                <h2>🏥 Assignment 2</h2>
+                <p><strong>Patient Manager CRUD App</strong> - Single page application for managing patient records with full CRUD functionality.</p>
+                <a href="Assignment2-Single Page CRUD App/patient-manager.html" class="btn">View Assignment →</a>
+            </div>
+            
+            <div class="assignment-card">
+                <h2>🧪 Lab Task 1</h2>
+                <p><strong>HTML/CSS Fundamentals</strong> - Practice exercises covering basic web development concepts.</p>
+                <a href="Lab-Task1/index.html" class="btn">View Assignment →</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Ahmed Subhan Tariqi | SP23-BCS-118</p>
+        </div>
+    </div>
+</body>
+</html>
