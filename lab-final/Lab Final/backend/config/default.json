@@ -1,6 +1,6 @@
 {
   "port": 5000,
-  "jwtPrivateKey": "bedentist_secret_key_2024",
-  "sessionSecret": "bedentist_session_secret_2024",
-  "db": "mongodb+srv://subhan:1234567890@cluster0.woxghxd.mongodb.net/bedentist-store?retryWrites=true&w=majority"
+  "jwtPrivateKey": "USE_ENV_VARIABLE",
+  "sessionSecret": "USE_ENV_VARIABLE",
+  "db": "USE_ENV_VARIABLE"
 }
