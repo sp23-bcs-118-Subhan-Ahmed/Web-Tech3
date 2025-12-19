@@ -1,0 +1,190 @@
+<style>
+    .track-header {
+        background-image: url('/images/home_dentist_subheader.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 100px 0;
+        text-align: center;
+        color: white;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    
+    .track-header h1 {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+    
+    .track-header p {
+        font-size: 18px;
+        opacity: 0.9;
+    }
+    
+    .track-container {
+        max-width: 700px;
+        margin: -40px auto 60px;
+        padding: 0 20px;
+    }
+    
+    .track-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        overflow: hidden;
+        padding: 40px;
+    }
+    
+    .search-box {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .search-box input {
+        flex: 1;
+        padding: 18px 25px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 18px;
+        transition: border-color 0.3s;
+    }
+    
+    .search-box input:focus {
+        border-color: #5ccdbe;
+        outline: none;
+    }
+    
+    .search-box button {
+        padding: 18px 35px;
+        background: #5ccdbe;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .search-box button:hover {
+        background: #4ab8a9;
+    }
+
+    .order-result {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+    }
+
+    .order-result.success {
+        background: #e8f5e9;
+        display: block;
+    }
+
+    .order-result.error {
+        background: #ffebee;
+        display: block;
+    }
+
+    .order-status {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a3a3a;
+        margin-bottom: 15px;
+    }
+
+    .order-details p {
+        margin: 10px 0;
+        color: #666;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+
+    .status-pending { background: #fff3e0; color: #e65100; }
+    .status-processing { background: #e3f2fd; color: #1565c0; }
+    .status-shipped { background: #e8f5e9; color: #2e7d32; }
+    .status-delivered { background: #e8f5e9; color: #1b5e20; }
+    .status-cancelled { background: #ffebee; color: #c62828; }
+</style>
+
+<!-- Track Header -->
+<div class="track-header">
+    <h1>�� Track Your Order</h1>
+    <p>Enter your order number to see the status of your order</p>
+</div>
+
+<div style="min-height: 50vh; background: #f8f8f8; padding-bottom: 60px;">
+    <div class="track-container">
+        <div class="track-card">
+            <div class="search-box">
+                <input type="text" id="orderNumber" placeholder="Enter Order Number (e.g., BD2512XXXX)">
+                <button onclick="trackOrder()">Track</button>
+            </div>
+            
+            <div class="order-result" id="orderResult">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script>
+    async function trackOrder() {
+        const orderNumber = document.getElementById('orderNumber').value.trim();
+        const resultDiv = document.getElementById('orderResult');
+        
+        if (!orderNumber) {
+            resultDiv.className = 'order-result error';
+            resultDiv.innerHTML = '<p style="color: #c62828;">Please enter an order number</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/orders/track/${orderNumber}`);
+            const data = await response.json();
+
+            if (data.success) {
+                const order = data.order;
+                resultDiv.className = 'order-result success';
+                resultDiv.innerHTML = `
+                    <div class="order-status">Order Found!</div>
+                    <div class="order-details">
+                        <p><strong>Order Number:</strong> ${order.orderNumber}</p>
+                        <p><strong>Status:</strong> <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span></p>
+                        <p><strong>Product:</strong> ${order.productName}</p>
+                        <p><strong>Total:</strong> $${order.totalAmount.toFixed(2)}</p>
+                        <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.className = 'order-result error';
+                resultDiv.innerHTML = '<p style="color: #c62828;">Order not found. Please check your order number.</p>';
+            }
+        } catch (error) {
+            resultDiv.className = 'order-result error';
+            resultDiv.innerHTML = '<p style="color: #c62828;">Error tracking order. Please try again.</p>';
+        }
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('orderNumber').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            trackOrder();
+        }
+    });
+</script>
+
+
+

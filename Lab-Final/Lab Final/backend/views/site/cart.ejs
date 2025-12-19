@@ -1,0 +1,348 @@
+<!-- Page Header -->
+<section class="py-4" style="background: linear-gradient(135deg, #1a3a3a 0%, #0d2626 100%);">
+  <div class="container text-center text-white">
+    <h1 style="font-family: Georgia, serif;">Shopping Cart</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li>
+        <li class="breadcrumb-item"><a href="/shop" class="text-white-50">Shop</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Cart</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Hidden element to store user login status -->
+<div id="userStatus" data-logged-in="<%= typeof user !== 'undefined' && user ? 'true' : 'false' %>" style="display:none;"></div>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <!-- Cart Items -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header" style="background-color: #1a3a3a; color: white;">
+            <i class="bi bi-cart3"></i> Cart Items
+          </div>
+          <div class="card-body">
+            <div id="cartItems">
+              <!-- Cart items will be loaded dynamically -->
+              <div class="text-center py-5" id="emptyCart">
+                <i class="bi bi-cart-x display-1 text-muted"></i>
+                <p class="text-muted mt-3">Your cart is empty</p>
+                <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Order Summary -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header" style="background-color: #1a3a3a; color: white;">
+            <i class="bi bi-receipt"></i> Order Summary
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal:</span>
+              <span id="subtotal">$0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping:</span>
+              <span id="shipping">$0.00</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+              <strong>Total:</strong>
+              <strong id="total" style="color: #5ccdbe;">$0.00</strong>
+            </div>
+            
+            <button class="btn w-100 mb-2" style="background-color: #5ccdbe; color: white;" id="checkoutBtn" disabled onclick="proceedToCheckout()">
+              Proceed to Checkout
+            </button>
+            <a href="/shop" class="btn btn-outline-secondary w-100">Continue Shopping</a>
+          </div>
+        </div>
+        
+        <!-- Promo Code -->
+        <div class="card mt-3">
+          <div class="card-body">
+            <h6>Have a promo code?</h6>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Enter code" id="promoCode">
+              <button class="btn btn-outline-secondary" type="button" onclick="applyPromo()">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const FREE_SHIPPING_THRESHOLD = 50;
+const SHIPPING_COST = 5.99;
+
+function loadCart() {
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const cartItemsContainer = document.getElementById('cartItems');
+  const emptyCart = document.getElementById('emptyCart');
+  
+  if (cart.length === 0) {
+    emptyCart.style.display = 'block';
+    document.getElementById('checkoutBtn').disabled = true;
+    updateSummary(0);
+    return;
+  }
+  
+  emptyCart.style.display = 'none';
+  document.getElementById('checkoutBtn').disabled = false;
+  
+  let html = '<table class="table">';
+  html += '<thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Total</th><th></th></tr></thead>';
+  html += '<tbody>';
+  
+  let subtotal = 0;
+  
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    subtotal += itemTotal;
+    
+    html += `
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            <img src="${item.image || '/images/default-product.png'}" 
+                 alt="${item.name}" 
+                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" 
+                 class="me-3">
+            <span>${item.name}</span>
+          </div>
+        </td>
+        <td>$${item.price.toFixed(2)}</td>
+        <td>
+          <div class="input-group input-group-sm" style="width: 100px;">
+            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(${index}, -1)">-</button>
+            <input type="text" class="form-control text-center" value="${item.quantity}" readonly>
+            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(${index}, 1)">+</button>
+          </div>
+        </td>
+        <td>$${itemTotal.toFixed(2)}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-danger" onclick="removeItem(${index})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+  
+  html += '</tbody></table>';
+  html += '<button class="btn btn-outline-danger btn-sm" onclick="clearCart()"><i class="bi bi-trash"></i> Clear Cart</button>';
+  
+  cartItemsContainer.innerHTML = html;
+  updateSummary(subtotal);
+}
+
+/**
+ * Updates the order summary section with calculated values
+ * @param {number} subtotal - Cart subtotal before shipping
+ * Calculates shipping (free above threshold) and total
+ */
+function updateSummary(subtotal) {
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
+  const total = subtotal + shipping;
+  
+  document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('shipping').textContent = shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2);
+  document.getElementById('total').textContent = '$' + total.toFixed(2);
+  
+  // Show free shipping progress
+  if (subtotal > 0 && subtotal < FREE_SHIPPING_THRESHOLD) {
+    const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+    showNotification(`Add $${remaining.toFixed(2)} more for FREE shipping!`, 'info');
+  }
+}
+
+/**
+ * Updates item quantity in cart with validation
+ * @param {number} index - Index of item in cart array
+ * @param {number} change - Quantity change (+1 or -1)
+ * Validates stock limits and removes item if quantity reaches 0
+ */
+function updateQuantity(index, change) {
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  // Validate index
+  if (index < 0 || index >= cart.length) {
+    showNotification('Invalid cart item', 'error');
+    return;
+  }
+  
+  const newQuantity = cart[index].quantity + change;
+  
+  // Validate quantity limits
+  if (newQuantity > 10) {
+    showNotification('Maximum quantity per item is 10', 'warning');
+    return;
+  }
+  
+  if (newQuantity <= 0) {
+    // Confirm before removing
+    if (confirm(`Remove "${cart[index].name}" from cart?`)) {
+      cart.splice(index, 1);
+      showNotification('Item removed from cart', 'success');
+    } else {
+      return;
+    }
+  } else {
+    cart[index].quantity = newQuantity;
+  }
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  loadCart();
+  updateCartCount();
+}
+
+/**
+ * Removes an item from cart with confirmation
+ * @param {number} index - Index of item to remove
+ */
+function removeItem(index) {
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  if (index < 0 || index >= cart.length) {
+    showNotification('Invalid cart item', 'error');
+    return;
+  }
+  
+  const itemName = cart[index].name;
+  cart.splice(index, 1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  loadCart();
+  updateCartCount();
+  showNotification(`"${itemName}" removed from cart`, 'success');
+}
+
+/**
+ * Clears all items from cart with confirmation
+ */
+function clearCart() {
+  if (confirm('Are you sure you want to clear your cart?')) {
+    localStorage.removeItem('cart');
+    loadCart();
+    updateCartCount();
+    showNotification('Cart cleared successfully', 'success');
+  }
+}
+
+/**
+ * Shows a notification message to the user
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'success', 'error', 'warning', 'info'
+ */
+function showNotification(message, type = 'info') {
+  // Remove existing notifications
+  const existing = document.querySelector('.cart-notification');
+  if (existing) existing.remove();
+  
+  const colors = {
+    success: '#28a745',
+    error: '#dc3545',
+    warning: '#ffc107',
+    info: '#17a2b8'
+  };
+  
+  const notification = document.createElement('div');
+  notification.className = 'cart-notification';
+  notification.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    padding: 15px 25px;
+    background: ${colors[type] || colors.info};
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+/**
+ * Validates cart before checkout and redirects appropriately
+ * Checks user login status and cart contents
+ */
+function proceedToCheckout() {
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  // Validate cart is not empty
+  if (cart.length === 0) {
+    showNotification('Your cart is empty', 'warning');
+    return;
+  }
+  
+  // Validate all items have valid data
+  for (const item of cart) {
+    if (!item.id || !item.name || !item.price || item.quantity < 1) {
+      showNotification('Invalid item in cart. Please refresh and try again.', 'error');
+      return;
+    }
+  }
+  
+  var userStatusEl = document.getElementById('userStatus');
+  var isLoggedIn = userStatusEl && userStatusEl.getAttribute('data-logged-in') === 'true';
+  if (isLoggedIn) {
+    window.location.href = '/checkout';
+  } else {
+    showNotification('Please login to proceed to checkout', 'info');
+    setTimeout(() => {
+      window.location.href = '/login?redirect=/checkout';
+    }, 1500);
+  }
+}
+
+/**
+ * Applies promo code (placeholder for future implementation)
+ */
+function applyPromo() {
+  const code = document.getElementById('promoCode').value.trim();
+  if (!code) {
+    showNotification('Please enter a promo code', 'warning');
+    return;
+  }
+  
+  // Placeholder - in a real app, this would validate against backend
+  showNotification('Promo code functionality coming soon!', 'info');
+}
+
+// Load cart on page load
+document.addEventListener('DOMContentLoaded', loadCart);
+
+// Add CSS animation keyframes
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+
+

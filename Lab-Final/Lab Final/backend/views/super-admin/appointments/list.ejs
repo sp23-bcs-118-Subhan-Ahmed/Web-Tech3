@@ -1,0 +1,278 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="mb-0">
+    <i class="bi bi-calendar-check text-success me-2"></i>Appointments & Service Bookings
+  </h5>
+  <div class="d-flex gap-2">
+    <select class="form-select form-select-sm" style="width: auto;" id="statusFilter" onchange="filterAppointments()">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <button class="btn btn-outline-primary btn-sm" onclick="window.location.reload()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+  </div>
+</div>
+
+<% if(typeof success !== 'undefined' && success) { %>
+  <div class="alert alert-success alert-dismissible fade show">
+    <i class="bi bi-check-circle"></i> <%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<% } %>
+
+<% if(typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-danger alert-dismissible fade show">
+    <i class="bi bi-exclamation-circle"></i> <%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<% } %>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark">
+      <div class="card-body text-center">
+        <h3 class="mb-0" id="pendingCount"><%= typeof appointments !== 'undefined' ? appointments.filter(a => a.orderStatus === 'pending').length : 0 %></h3>
+        <small>Pending</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white">
+      <div class="card-body text-center">
+        <h3 class="mb-0" id="confirmedCount"><%= typeof appointments !== 'undefined' ? appointments.filter(a => a.orderStatus === 'confirmed' || a.orderStatus === 'processing').length : 0 %></h3>
+        <small>Confirmed</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white">
+      <div class="card-body text-center">
+        <h3 class="mb-0" id="completedCount"><%= typeof appointments !== 'undefined' ? appointments.filter(a => a.orderStatus === 'completed' || a.orderStatus === 'delivered').length : 0 %></h3>
+        <small>Completed</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-secondary text-white">
+      <div class="card-body text-center">
+        <h3 class="mb-0" id="totalCount"><%= typeof appointments !== 'undefined' ? appointments.length : 0 %></h3>
+        <small>Total</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Appointments Table -->
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover" id="appointmentsTable">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Booking ID</th>
+            <th>Customer</th>
+            <th>Services</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th>Booked On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if(typeof appointments !== 'undefined' && appointments.length > 0) { %>
+            <% appointments.forEach(function(apt, index) { %>
+              <tr class="appointment-row" data-status="<%= apt.orderStatus %>">
+                <td><%= index + 1 %></td>
+                <td>
+                  <span class="badge bg-dark font-monospace"><%= apt.orderNumber %></span>
+                </td>
+                <td>
+                  <div>
+                    <strong><%= apt.customerName || 'N/A' %></strong>
+                  </div>
+                  <small class="text-muted"><%= apt.customerEmail || apt.email || 'N/A' %></small>
+                  <% if(apt.customerPhone) { %>
+                    <br><small class="text-muted"><i class="bi bi-telephone"></i> <%= apt.customerPhone %></small>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(apt.items && apt.items.length > 0) { %>
+                    <% apt.items.forEach(function(item) { %>
+                      <div class="small">• <%= item.name || item.productName %> x<%= item.quantity || 1 %></div>
+                    <% }); %>
+                  <% } else { %>
+                    <div class="small"><%= apt.productName || 'N/A' %></div>
+                  <% } %>
+                </td>
+                <td>
+                  <strong class="text-success">$<%= apt.total || apt.amount || 0 %></strong>
+                </td>
+                <td>
+                  <span class="badge bg-<%= apt.paymentStatus === 'paid' ? 'success' : (apt.paymentStatus === 'pending' ? 'warning' : 'secondary') %>">
+                    <%= apt.paymentMethod ? apt.paymentMethod.toUpperCase() : 'N/A' %>
+                  </span>
+                  <div class="small text-muted"><%= apt.paymentStatus || 'pending' %></div>
+                </td>
+                <td>
+                  <% 
+                    let statusClass = 'secondary';
+                    let statusIcon = 'clock';
+                    if(apt.orderStatus === 'pending') { statusClass = 'warning'; statusIcon = 'clock'; }
+                    else if(apt.orderStatus === 'confirmed' || apt.orderStatus === 'processing') { statusClass = 'info'; statusIcon = 'check-circle'; }
+                    else if(apt.orderStatus === 'completed' || apt.orderStatus === 'delivered') { statusClass = 'success'; statusIcon = 'check-circle-fill'; }
+                    else if(apt.orderStatus === 'cancelled') { statusClass = 'danger'; statusIcon = 'x-circle'; }
+                  %>
+                  <span class="badge bg-<%= statusClass %>">
+                    <i class="bi bi-<%= statusIcon %>"></i> <%= apt.orderStatus ? apt.orderStatus.charAt(0).toUpperCase() + apt.orderStatus.slice(1) : 'Pending' %>
+                  </span>
+                </td>
+                <td>
+                  <div><%= apt.createdAt ? new Date(apt.createdAt).toLocaleDateString() : 'N/A' %></div>
+                  <small class="text-muted"><%= apt.createdAt ? new Date(apt.createdAt).toLocaleTimeString() : '' %></small>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-primary" onclick="viewAppointment('<%= apt._id %>')" title="View Details">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" title="Update Status">
+                      <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="/super-admin/appointments/status/<%= apt._id %>/pending">
+                        <i class="bi bi-clock text-warning"></i> Pending
+                      </a></li>
+                      <li><a class="dropdown-item" href="/super-admin/appointments/status/<%= apt._id %>/confirmed">
+                        <i class="bi bi-check-circle text-info"></i> Confirmed
+                      </a></li>
+                      <li><a class="dropdown-item" href="/super-admin/appointments/status/<%= apt._id %>/completed">
+                        <i class="bi bi-check-circle-fill text-success"></i> Completed
+                      </a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item text-danger" href="/super-admin/appointments/status/<%= apt._id %>/cancelled">
+                        <i class="bi bi-x-circle"></i> Cancel
+                      </a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="9" class="text-center text-muted py-5">
+                <i class="bi bi-calendar-x display-4 d-block mb-3"></i>
+                No appointments found
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- View Appointment Modal -->
+<div class="modal fade" id="viewAppointmentModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title"><i class="bi bi-calendar-check"></i> Appointment Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="appointmentDetails">
+        <div class="text-center py-4">
+          <div class="spinner-border text-success"></div>
+          <p class="mt-2">Loading...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter appointments by status
+  function filterAppointments() {
+    const status = document.getElementById('statusFilter').value.toLowerCase();
+    const rows = document.querySelectorAll('.appointment-row');
+    
+    rows.forEach(row => {
+      const rowStatus = row.dataset.status?.toLowerCase() || '';
+      if (status === '' || rowStatus === status) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+  
+  // View appointment details
+  async function viewAppointment(id) {
+    const modal = new bootstrap.Modal(document.getElementById('viewAppointmentModal'));
+    modal.show();
+    
+    try {
+      const response = await fetch('/api/orders/' + id);
+      const result = await response.json();
+      
+      if (result.success) {
+        const apt = result.data;
+        document.getElementById('appointmentDetails').innerHTML = `
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-muted mb-3">Customer Information</h6>
+              <table class="table table-sm">
+                <tr><th width="40%">Name</th><td>${apt.customerName || 'N/A'}</td></tr>
+                <tr><th>Email</th><td>${apt.customerEmail || apt.email || 'N/A'}</td></tr>
+                <tr><th>Phone</th><td>${apt.customerPhone || 'N/A'}</td></tr>
+                <tr><th>Address</th><td>${apt.shippingAddress || 'N/A'}</td></tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted mb-3">Booking Information</h6>
+              <table class="table table-sm">
+                <tr><th width="40%">Booking ID</th><td><span class="badge bg-dark">${apt.orderNumber}</span></td></tr>
+                <tr><th>Status</th><td><span class="badge bg-${apt.orderStatus === 'completed' ? 'success' : (apt.orderStatus === 'pending' ? 'warning' : 'info')}">${apt.orderStatus}</span></td></tr>
+                <tr><th>Payment</th><td>${apt.paymentMethod?.toUpperCase() || 'N/A'} - ${apt.paymentStatus || 'pending'}</td></tr>
+                <tr><th>Booked On</th><td>${new Date(apt.createdAt).toLocaleString()}</td></tr>
+              </table>
+            </div>
+          </div>
+          <hr>
+          <h6 class="text-muted mb-3">Services Booked</h6>
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr><th>Service</th><th width="80">Qty</th><th width="100" class="text-end">Price</th></tr>
+            </thead>
+            <tbody>
+              ${apt.items && apt.items.length > 0 ? 
+                apt.items.map(item => `<tr><td>${item.name || item.productName}</td><td>${item.quantity || 1}</td><td class="text-end">$${item.price || 0}</td></tr>`).join('') 
+                : `<tr><td>${apt.productName || 'N/A'}</td><td>${apt.quantity || 1}</td><td class="text-end">$${apt.amount || 0}</td></tr>`
+              }
+            </tbody>
+            <tfoot class="table-success">
+              <tr><th colspan="2">Total Amount</th><th class="text-end">$${apt.total || apt.amount || 0}</th></tr>
+            </tfoot>
+          </table>
+          ${apt.notes ? `<div class="alert alert-info mt-3"><strong>Notes:</strong> ${apt.notes}</div>` : ''}
+        `;
+      } else {
+        document.getElementById('appointmentDetails').innerHTML = `
+          <div class="alert alert-danger">Failed to load appointment details</div>
+        `;
+      }
+    } catch (error) {
+      document.getElementById('appointmentDetails').innerHTML = `
+        <div class="alert alert-danger">Error: ${error.message}</div>
+      `;
+    }
+  }
+</script>

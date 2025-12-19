@@ -1,0 +1,70 @@
+<!-- Footer Sections -->
+<section id="contact" class="contact-footer">
+    <div class="container-wide">
+        <div class="footer-grid">
+            <!-- Column 1: You can trust us -->
+            <div class="footer-column">
+                <h3>You can trust us</h3>
+                <p>Aenean luctus, neque ut interdum efficitur, magna enim porttitor tellus, vitae finibus tortor turpis et tellus. Nullam pellentesque venenatis neque, in congue diam iaculis eget. Phasellus fermentum velit sed libero vitae finibus tortor consectetur commodo.</p>
+            </div>
+            
+            <!-- Column 2: Shortcut links -->
+            <div class="footer-column">
+                <h3>Shortcut links</h3>
+                <div class="links-two-columns">
+                    <ul class="link-list-col">
+                        <li><a href="#">Velit mauris</a></li>
+                        <li><a href="#">Entum feuis</a></li>
+                        <li><a href="#">Aliquam massa</a></li>
+                        <li><a href="#">Egestas quam</a></li>
+                    </ul>
+                    <ul class="link-list-col">
+                        <li><a href="#">Aenean ligula</a></li>
+                        <li><a href="#">Dapibus at dolor</a></li>
+                        <li><a href="#">Molestie id</a></li>
+                        <li><a href="#">Vestibulum</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Column 3: Our address -->
+            <div class="footer-column">
+                <h3>Our address</h3>
+                <div class="address-with-icon">
+                    <div class="location-icon">
+                        <svg width="40" height="60" viewBox="0 0 40 60" fill="none">
+                            <path d="M20 0C9 0 0 9 0 20C0 35 20 60 20 60C20 60 40 35 40 20C40 9 31 0 20 0ZM20 27C16.1 27 13 23.9 13 20C13 16.1 16.1 13 20 13C23.9 13 27 16.1 27 20C27 23.9 23.9 27 20 27Z" fill="#5ccdbe"/>
+                        </svg>
+                    </div>
+                    <address class="contact-address">
+                        <p><strong>BeDentist - Duis sed odio</strong></p>
+                        <p>Level 13, 2 Elizabeth St,<br>
+                        Melbourne, Victoria 3000<br>
+                        Australia</p>
+                    </address>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer" role="contentinfo">
+    <div class="container-wide">
+        <p class="copyright">© <%= new Date().getFullYear() %> Ahmed Subhan Tariqi | SP23-BCS-118</p>
+    </div>
+</footer>
+
+<!-- User Login Status Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const user = JSON.parse(localStorage.getItem('bedent_user') || 'null');
+        const loginLink = document.getElementById('userLoginLink');
+        
+        if (user && loginLink) {
+            loginLink.innerHTML = `👤 ${user.name.split(' ')[0]}`;
+            loginLink.href = '/user-login';
+            loginLink.title = `Logged in as ${user.email}`;
+        }
+    });
+</script>

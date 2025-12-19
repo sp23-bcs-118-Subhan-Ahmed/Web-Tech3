@@ -1,0 +1,72 @@
+<!-- Page Header with Background -->
+<section class="page-header-with-bg" style="background-image: url('/images/home_dentist_subheader.jpg'); background-size: cover; background-position: center; padding: 100px 0; display: flex; align-items: center; justify-content: center; min-height: 300px; position: relative;">
+    <div class="container-wide" style="position: relative; z-index: 2;">
+        <h1 class="page-title" style="color: #fff; font-size: 48px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Contact</h1>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section style="padding: 80px 0; background: #f8f8f8;">
+    <div class="container-wide">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+            <!-- Contact Form -->
+            <div>
+                <h2 style="font-size: 28px; color: #1a3a3a; font-weight: 400; font-style: italic; font-family: Georgia, 'Times New Roman', serif; margin-bottom: 30px;">Send us a message</h2>
+                <form id="contactForm">
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" name="name" placeholder="Your Name" required style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <input type="email" name="email" placeholder="Your Email" required style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" name="subject" placeholder="Subject" style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <textarea name="message" placeholder="Your Message" rows="6" required style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; resize: vertical;"></textarea>
+                    </div>
+                    <button type="submit" style="padding: 15px 40px; background: #1a3a3a; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Send Message</button>
+                </form>
+            </div>
+            
+            <!-- Contact Info -->
+            <div>
+                <h2 style="font-size: 28px; color: #1a3a3a; font-weight: 400; font-style: italic; font-family: Georgia, 'Times New Roman', serif; margin-bottom: 30px;">Contact Information</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-size: 18px; color: #1a3a3a; margin-bottom: 10px;">�� Address</h3>
+                    <p style="font-size: 15px; color: #888; line-height: 1.8;">Level 13, 2 Elizabeth St,<br>Melbourne, Victoria 3000<br>Australia</p>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-size: 18px; color: #1a3a3a; margin-bottom: 10px;">�� Phone</h3>
+                    <p style="font-size: 15px; color: #888;">+1 234 567 8900</p>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-size: 18px; color: #1a3a3a; margin-bottom: 10px;">✉️ Email</h3>
+                    <p style="font-size: 15px; color: #888;">info@bedentist.com</p>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-size: 18px; color: #1a3a3a; margin-bottom: 10px;">�� Working Hours</h3>
+                    <p style="font-size: 15px; color: #888; line-height: 1.8;">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('../partials/cta') %>
+<%- include('../partials/footer') %>
+
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Thank you for your message! We will get back to you soon.');
+        this.reset();
+    });
+</script>
+
+
+

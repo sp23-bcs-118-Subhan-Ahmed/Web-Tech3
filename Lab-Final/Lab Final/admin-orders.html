@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - BeDentist Admin</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .admin-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #5ccdbe 0%, #4ab8a9 100%);
+            color: white;
+            padding: 20px 0;
+        }
+
+        .admin-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-logo img {
+            height: 50px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #5ccdbe;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #333;
+        }
+
+        .orders-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .orders-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .orders-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .orders-table tr:hover {
+            background: #fafafa;
+        }
+
+        .order-number {
+            font-family: monospace;
+            font-weight: 600;
+            color: #5ccdbe;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #ffeaa7; color: #d68910; }
+        .status-processing { background: #81ecec; color: #00838f; }
+        .status-shipped { background: #74b9ff; color: #0056b3; }
+        .status-delivered { background: #55efc4; color: #00695c; }
+        .status-cancelled { background: #fab1a0; color: #c0392b; }
+
+        .btn-action {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .btn-view { background: #3b82f6; color: white; }
+        .btn-update { background: #10b981; color: white; }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .order-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .order-detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group {
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #5ccdbe, #4ab8a9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-page">
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <img src="images/logo-tooth.png" alt="BeDentist">
+                    <h1>�� Manage Orders</h1>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <a href="admin.html" class="back-link">← Back to Dashboard</a>
+
+            <div class="page-header">
+                <h1>�� Customer Orders</h1>
+            </div>
+
+            <div class="orders-table" id="ordersContainer">
+                <div class="empty-state">
+                    <h3>Loading orders...</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="orderDetails">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        // Check auth
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const userData = JSON.parse(user);
+            if (userData.role !== 'admin') {
+                window.location.href = 'home.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_URL}/orders`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderOrders(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <h3>Error loading orders</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('ordersContainer');
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>�� No orders yet</h3>
+                        <p>When customers place orders, they'll appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(order => `
+                            <tr>
+                                <td class="order-number">${order.orderNumber}</td>
+                                <td>${order.customer?.name || 'N/A'}</td>
+                                <td>${order.product?.name || 'N/A'}</td>
+                                <td>$${order.totalAmount?.toFixed(2) || '0.00'}</td>
+                                <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn-action btn-view" onclick='viewOrder(${JSON.stringify(order)})'>View</button>
+                                    <button class="btn-action btn-update" onclick='updateOrderModal(${JSON.stringify(order)})'>Update</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function viewOrder(order) {
+            document.getElementById('orderDetails').innerHTML = `
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Order Number</span>
+                    <span class="order-detail-value">${order.orderNumber}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Customer Name</span>
+                    <span class="order-detail-value">${order.customer?.name || 'N/A'}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Email</span>
+                    <span class="order-detail-value">${order.customer?.email || 'N/A'}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Phone</span>
+                    <span class="order-detail-value">${order.customer?.phone || 'N/A'}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Product</span>
+                    <span class="order-detail-value">${order.product?.name || 'N/A'}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Quantity</span>
+                    <span class="order-detail-value">${order.quantity}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Total Amount</span>
+                    <span class="order-detail-value">$${order.totalAmount?.toFixed(2)}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Payment Method</span>
+                    <span class="order-detail-value">${order.paymentMethod || 'N/A'}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Shipping Address</span>
+                    <span class="order-detail-value">${order.shippingAddress || 'N/A'}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Status</span>
+                    <span class="order-detail-value"><span class="status-badge status-${order.status}">${order.status}</span></span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Order Date</span>
+                    <span class="order-detail-value">${new Date(order.createdAt).toLocaleString()}</span>
+                </div>
+            `;
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function updateOrderModal(order) {
+            document.getElementById('orderDetails').innerHTML = `
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Order Number</span>
+                    <span class="order-detail-value">${order.orderNumber}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Current Status</span>
+                    <span class="order-detail-value"><span class="status-badge status-${order.status}">${order.status}</span></span>
+                </div>
+                <div class="form-group">
+                    <label>Update Status</label>
+                    <select id="newStatus">
+                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                        <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                    </select>
+                </div>
+                <button class="btn-submit" onclick="updateOrderStatus('${order._id}')">Update Status</button>
+            `;
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        async function updateOrderStatus(orderId) {
+            const newStatus = document.getElementById('newStatus').value;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Order status updated!');
+                    closeModal();
+                    loadOrders();
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Update error:', error);
+                alert('Error updating order status');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+
+        // Initialize
+        checkAuth();
+        loadOrders();
+    </script>
+</body>
+</html>
+
