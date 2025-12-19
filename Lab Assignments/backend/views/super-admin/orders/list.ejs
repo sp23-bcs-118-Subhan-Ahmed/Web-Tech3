@@ -1,0 +1,181 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="mb-0">Orders</h5>
+  <div>
+    <form action="/super-admin/orders" method="GET" class="d-flex gap-2">
+      <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">All Statuses</option>
+        <option value="pending" <%= typeof selectedStatus !== 'undefined' && selectedStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+        <option value="processing" <%= typeof selectedStatus !== 'undefined' && selectedStatus === 'processing' ? 'selected' : '' %>>Processing</option>
+        <option value="shipped" <%= typeof selectedStatus !== 'undefined' && selectedStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
+        <option value="delivered" <%= typeof selectedStatus !== 'undefined' && selectedStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+        <option value="cancelled" <%= typeof selectedStatus !== 'undefined' && selectedStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+      </select>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if(typeof orders !== 'undefined' && orders.length > 0) { %>
+            <% orders.forEach(function(order) { %>
+              <tr>
+                <td><code><%= order.orderNumber || order._id.toString().slice(-8).toUpperCase() %></code></td>
+                <td><%= order.customerName || 'N/A' %></td>
+                <td><%= order.customerEmail || order.email || 'N/A' %></td>
+                <td><%= order.items ? order.items.length + ' items' : (order.productName ? '1 item' : '0 items') %></td>
+                <td><strong>Rs. <%= order.total ? order.total.toFixed(2) : (order.amount ? order.amount.toFixed(2) : '0.00') %></strong></td>
+                <td>
+                  <span class="badge bg-<%= 
+                    order.orderStatus === 'delivered' ? 'success' : 
+                    order.orderStatus === 'shipped' ? 'info' :
+                    order.orderStatus === 'processing' ? 'primary' :
+                    order.orderStatus === 'confirmed' ? 'success' :
+                    order.orderStatus === 'cancelled' ? 'danger' : 'warning' 
+                  %>">
+                    <%= order.orderStatus || 'pending' %>
+                  </span>
+                </td>
+                <td><%= order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '-' %></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#orderModal<%= order._id %>"
+                          title="View Details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">No orders found</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination -->
+    <% if(typeof totalPages !== 'undefined' && totalPages > 1) { %>
+      <nav aria-label="Orders pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= currentPage - 1 %>&status=<%= selectedStatus || '' %>">Previous</a>
+          </li>
+          <% for(let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+              <a class="page-link" href="?page=<%= i %>&status=<%= selectedStatus || '' %>"><%= i %></a>
+            </li>
+          <% } %>
+          <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= currentPage + 1 %>&status=<%= selectedStatus || '' %>">Next</a>
+          </li>
+        </ul>
+      </nav>
+    <% } %>
+  </div>
+</div>
+
+<!-- Order Detail Modals -->
+<% if(typeof orders !== 'undefined' && orders.length > 0) { %>
+  <% orders.forEach(function(order) { %>
+    <div class="modal fade" id="orderModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: #1a3a3a; color: white;">
+            <h5 class="modal-title">Order #<%= order.orderNumber || order._id.toString().slice(-8).toUpperCase() %></h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <h6>Customer Information</h6>
+                <p class="mb-1"><strong>Name:</strong> <%= order.customerName || 'N/A' %></p>
+                <p class="mb-1"><strong>Email:</strong> <%= order.customerEmail || order.email || 'N/A' %></p>
+                <p class="mb-1"><strong>Phone:</strong> <%= order.customerPhone || order.phone || 'N/A' %></p>
+              </div>
+              <div class="col-md-6">
+                <h6>Shipping Address</h6>
+                <p class="mb-0"><%= order.shippingAddress || order.address || 'N/A' %></p>
+              </div>
+            </div>
+            
+            <h6>Order Items</h6>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if(order.items && order.items.length > 0) { %>
+                  <% order.items.forEach(function(item) { %>
+                    <tr>
+                      <td><%= item.name || 'Unknown Product' %></td>
+                      <td>Rs. <%= item.price ? item.price.toFixed(2) : '0.00' %></td>
+                      <td><%= item.quantity || 1 %></td>
+                      <td>Rs. <%= ((item.price || 0) * (item.quantity || 1)).toFixed(2) %></td>
+                    </tr>
+                  <% }); %>
+                <% } else if(order.productName) { %>
+                  <tr>
+                    <td><%= order.productName %></td>
+                    <td>Rs. <%= order.amount ? order.amount.toFixed(2) : '0.00' %></td>
+                    <td><%= order.quantity || 1 %></td>
+                    <td>Rs. <%= order.amount ? (order.amount * (order.quantity || 1)).toFixed(2) : '0.00' %></td>
+                  </tr>
+                <% } %>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                  <td><strong>Rs. <%= order.total ? order.total.toFixed(2) : (order.amount ? order.amount.toFixed(2) : '0.00') %></strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            
+            <form action="/super-admin/orders/update-status/<%= order._id %>" method="POST" class="mt-3">
+              <div class="row align-items-end">
+                <div class="col-md-6">
+                  <label class="form-label">Update Status</label>
+                  <select name="status" class="form-select">
+                    <option value="pending" <%= order.orderStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="confirmed" <%= order.orderStatus === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                    <option value="processing" <%= order.orderStatus === 'processing' ? 'selected' : '' %>>Processing</option>
+                    <option value="shipped" <%= order.orderStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                    <option value="delivered" <%= order.orderStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="cancelled" <%= order.orderStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+
+
+

@@ -24,7 +24,9 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--bedentist-teal) 0%, #4ab8a9 100%);
+            background-image: url('../images/home_dentist_subheader.jpg');
+            background-size: cover;
+            background-position: center;
             color: white;
             padding: 2rem 0;
             margin-bottom: 2rem;
@@ -263,7 +265,7 @@
     <!-- Header -->
     <div class="header">
         <div class="container">
-            <a href="../index.html" class="back-btn">
+            <a href="/" class="back-btn">
                 <i class="bi bi-arrow-left-circle-fill"></i> Back to Home
             </a>
             <h1><i class="bi bi-clipboard2-pulse"></i> Patient Record Manager</h1>
@@ -838,5 +840,69 @@
             }
         });
     </script>
+
+    <!-- Separator Section -->
+    <section style="padding: 40px 0; background: #fff;">
+        <div style="display: flex; align-items: center; justify-content: center; max-width: 800px; margin: 0 auto; padding: 0 40px;">
+            <div style="flex: 1; height: 1px; background: #e0e0e0;"></div>
+            <div style="padding: 0 30px;">
+                <img src="../images/logo-tooth.png" alt="Separator" style="width: 35px; height: auto; display: block; opacity: 0.7;">
+            </div>
+            <div style="flex: 1; height: 1px; background: #e0e0e0;"></div>
+        </div>
+        <p style="text-align: center; font-size: 12px; color: #888; margin-top: 15px; letter-spacing: 2px;">BEDENT</p>
+    </section>
+
+    <!-- Footer Sections -->
+    <section style="background: #f5f5f5; padding: 60px 0;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;">
+            <!-- Column 1: You can trust us -->
+            <div>
+                <h3 style="font-size: 18px; color: #4a2c4a; font-weight: 600; margin-bottom: 20px;">You can trust us</h3>
+                <p style="font-size: 14px; color: #888; line-height: 1.8;">Aenean luctus, neque ut interdum efficitur, magna enim porttitor tellus, vitae finibus tortor turpis et tellus. Nullam pellentesque venenatis neque, in congue diam iaculis eget. Phasellus fermentum velit sed libero vitae finibus tortor consectetur commodo.</p>
+            </div>
+            
+            <!-- Column 2: Shortcut links -->
+            <div>
+                <h3 style="font-size: 18px; color: #4a2c4a; font-weight: 600; margin-bottom: 20px;">Shortcut links</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Velit mauris</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Entum feuis</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Aliquam massa</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Egestas quam</a></li>
+                    </ul>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Aenean ligula</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Dapibus at dolor</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Molestie id</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #888; text-decoration: none; font-size: 14px;">Vestibulum</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Column 3: Our address -->
+            <div>
+                <h3 style="font-size: 18px; color: #4a2c4a; font-weight: 600; margin-bottom: 20px;">Our address</h3>
+                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                    <div>
+                        <svg width="40" height="60" viewBox="0 0 40 60" fill="none">
+                            <path d="M20 0C9 0 0 9 0 20C0 35 20 60 20 60C20 60 40 35 40 20C40 9 31 0 20 0ZM20 27C16.1 27 13 23.9 13 20C13 16.1 16.1 13 20 13C23.9 13 27 16.1 27 20C27 23.9 23.9 27 20 27Z" fill="#5ccdbe"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size: 14px; color: #4a2c4a; font-weight: 600; margin-bottom: 5px;">BeDentist - Duis sed odio</p>
+                        <p style="font-size: 14px; color: #888; line-height: 1.8;">Level 13, 2 Elizabeth St,<br>Melbourne, Victoria 3000<br>Australia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: #4a4a4a; padding: 20px 0; text-align: center;">
+        <p style="color: #999; font-size: 14px; margin: 0;">© 2025 Ahmed Subhan Tariqi | SP23-BCS-118</p>
+    </footer>
 </body>
 </html>
+

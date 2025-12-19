@@ -1,0 +1,121 @@
+<!-- Hero Section -->
+<section class="hero-section position-relative" style="background: linear-gradient(135deg, #1a3a3a 0%, #0d2626 100%); min-height: 60vh;">
+  <div class="container py-5 text-center text-white">
+    <h1 class="display-4 mb-4" style="font-family: Georgia, serif;">Welcome to BeDentist Shop</h1>
+    <p class="lead mb-4">Premium dental care products for a healthy smile</p>
+    <a href="/shop" class="btn btn-lg" style="background-color: #5ccdbe; color: white;">Shop Now</a>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5" style="color: #1a3a3a; font-family: Georgia, serif;">Featured Products</h2>
+    
+    <div class="row">
+      <% if(typeof featuredProducts !== 'undefined' && featuredProducts.length > 0) { %>
+        <% featuredProducts.forEach(function(product) { %>
+          <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+              <img src="<%= product.image || '/images/default-product.png' %>" 
+                   class="card-img-top" 
+                   alt="<%= product.name %>"
+                   style="height: 200px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title"><%= product.name %></h5>
+                <p class="card-text text-muted">
+                  <%= product.description ? product.description.substring(0, 60) + '...' : '' %>
+                </p>
+                <p class="h5" style="color: #5ccdbe;">$<%= product.price.toFixed(2) %></p>
+              </div>
+              <div class="card-footer bg-white border-0">
+                <button class="btn w-100 add-to-cart-btn" style="background-color: #5ccdbe; color: white;" 
+                        data-id="<%= product._id %>" 
+                        data-name="<%= product.name %>" 
+                        data-price="<%= product.price %>" 
+                        data-image="<%= product.image %>">
+                  <i class="bi bi-cart-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="col-12 text-center">
+          <p class="text-muted">No featured products available at the moment.</p>
+          <a href="/shop" class="btn btn-primary">Browse All Products</a>
+        </div>
+      <% } %>
+    </div>
+    
+    <div class="text-center mt-4">
+      <a href="/shop" class="btn btn-outline-secondary">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5" style="background-color: #f8f9fa;">
+  <div class="container">
+    <h2 class="text-center mb-5" style="color: #1a3a3a; font-family: Georgia, serif;">Our Services</h2>
+    
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="text-center">
+          <i class="bi bi-shield-check display-3 mb-3" style="color: #5ccdbe;"></i>
+          <h4>Quality Guaranteed</h4>
+          <p class="text-muted">All our products are certified and tested for safety.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="text-center">
+          <i class="bi bi-truck display-3 mb-3" style="color: #5ccdbe;"></i>
+          <h4>Fast Shipping</h4>
+          <p class="text-muted">Free shipping on orders over $50.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="text-center">
+          <i class="bi bi-headset display-3 mb-3" style="color: #5ccdbe;"></i>
+          <h4>24/7 Support</h4>
+          <p class="text-muted">Our team is here to help you anytime.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function addToCart(id, name, price, image) {
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  const existingItem = cart.find(item => item.id === id);
+  if (existingItem) {
+    existingItem.quantity++;
+  } else {
+    cart.push({ id, name, price, image, quantity: 1 });
+  }
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartCount();
+  
+  // Show toast notification
+  alert(name + ' added to cart!');
+}
+
+// Event delegation for add to cart buttons
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.getAttribute('data-id');
+      var name = this.getAttribute('data-name');
+      var price = parseFloat(this.getAttribute('data-price'));
+      var image = this.getAttribute('data-image');
+      addToCart(id, name, price, image);
+    });
+  });
+});
+</script>
+
+
+

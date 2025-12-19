@@ -870,7 +870,7 @@
             $('input[name="paymentMethod"]').on('change', validatePaymentMethod);
 
             // Form submission
-            $('#placeOrderBtn').on('click', function(e) {
+            $('#placeOrderBtn').on('click', async function(e) {
                 e.preventDefault();
                 
                 // Validate all fields
@@ -890,12 +890,90 @@
                                    isCountryValid && isPaymentValid && isTermsValid;
                 
                 if (isFormValid) {
-                    // Form is valid, show success message
-                    alert('✅ Order placed successfully!\n\nThank you for your purchase. You will receive a confirmation email shortly.');
+                    // Disable button and show loading
+                    const $btn = $(this);
+                    const originalText = $btn.html();
+                    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
                     
-                    // Optional: Reset form or redirect
-                    // $('#checkoutForm')[0].reset();
-                    // window.location.href = 'thank-you.html';
+                    try {
+                        // Gather selected items
+                        const items = [];
+                        $('.item-checkbox:checked').each(function() {
+                            const $label = $(this).siblings('label').find('span:not(.text-muted)').first();
+                            const name = $label.text().trim();
+                            const qty = parseInt($(this).data('qty')) || 1;
+                            const price = parseFloat($(this).data('price')) || 0;
+                            items.push({ name, quantity: qty, price });
+                        });
+                        
+                        // Get payment method
+                        const paymentMethod = $('input[name="paymentMethod"]:checked').val() || 'cod';
+                        
+                        // Build order data
+                        const orderData = {
+                            // Customer Info
+                            customerName: $('#fullName').val().trim(),
+                            customerEmail: $('#email').val().trim().toLowerCase(),
+                            customerPhone: $('#phone').val().trim(),
+                            
+                            // Shipping Address
+                            shippingAddress: $('#address').val().trim() + ', ' + $('#city').val().trim() + ', ' + $('#postalCode').val().trim(),
+                            city: $('#city').val().trim(),
+                            postalCode: $('#postalCode').val().trim(),
+                            country: $('#country option:selected').text(),
+                            
+                            // Order Items
+                            productName: items.map(i => i.name).join(', '),
+                            items: items,
+                            quantity: items.reduce((sum, i) => sum + i.quantity, 0),
+                            
+                            // Amounts
+                            amount: parseFloat($('#grandTotalAmount').text().replace('$', '')),
+                            subtotal: parseFloat($('#subtotalAmount').text().replace('$', '')),
+                            tax: parseFloat($('#taxAmount').text().replace('$', '')),
+                            shipping: parseFloat($('#shippingAmount').text().replace('$', '')),
+                            total: parseFloat($('#grandTotalAmount').text().replace('$', '')),
+                            
+                            // Payment
+                            paymentMethod: paymentMethod,
+                            paymentStatus: paymentMethod === 'cod' ? 'pending' : 'paid',
+                            
+                            // Order type
+                            orderType: 'appointment', // This is an appointment/service booking
+                            orderStatus: 'pending',
+                            
+                            // Notes
+                            notes: 'Appointment booking from checkout page'
+                        };
+                        
+                        // Send to API
+                        const response = await fetch('http://localhost:5000/api/orders', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(orderData)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Success! Show confirmation
+                            const orderNumber = result.data.orderNumber || result.data._id;
+                            
+                            // Show success modal/alert
+                            alert(`✅ Appointment Booked Successfully!\n\nOrder Number: ${orderNumber}\n\nThank you for booking with BeDentist. You will receive a confirmation email at ${orderData.customerEmail}.\n\nYou can track your appointment at:\n/track-order.html?orderNumber=${orderNumber}`);
+                            
+                            // Redirect to track order page
+                            window.location.href = `../track-order.html?orderNumber=${orderNumber}`;
+                        } else {
+                            throw new Error(result.message || 'Failed to place order');
+                        }
+                    } catch (error) {
+                        console.error('Order error:', error);
+                        alert('❌ Error placing order: ' + error.message + '\n\nPlease try again.');
+                        $btn.prop('disabled', false).html(originalText);
+                    }
                 } else {
                     // Show error message
                     alert('❌ Please fill in all required fields correctly before placing your order.');

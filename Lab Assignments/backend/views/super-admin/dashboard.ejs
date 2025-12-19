@@ -1,0 +1,131 @@
+<div class="row">
+  <div class="col mb-4">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-box-seam display-4 text-primary mb-3"></i>
+        <h5 class="card-title">Products</h5>
+        <p class="display-6"><%= typeof productsCount !== 'undefined' ? productsCount : 0 %></p>
+        <a href="/super-admin/products" class="btn btn-primary btn-sm">View All</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col mb-4">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-tags display-4 text-success mb-3"></i>
+        <h5 class="card-title">Categories</h5>
+        <p class="display-6"><%= typeof categoriesCount !== 'undefined' ? categoriesCount : 0 %></p>
+        <a href="/super-admin/categories" class="btn btn-success btn-sm">View All</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col mb-4">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-receipt display-4 text-warning mb-3"></i>
+        <h5 class="card-title">Orders</h5>
+        <p class="display-6"><%= typeof ordersCount !== 'undefined' ? ordersCount : 0 %></p>
+        <a href="/super-admin/orders" class="btn btn-warning btn-sm">View All</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col mb-4">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-calendar-check display-4 text-danger mb-3"></i>
+        <h5 class="card-title">Appointments</h5>
+        <p class="display-6"><%= typeof appointmentsCount !== 'undefined' ? appointmentsCount : 0 %></p>
+        <a href="/super-admin/appointments" class="btn btn-danger btn-sm">View All</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col mb-4">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-people display-4 text-info mb-3"></i>
+        <h5 class="card-title">Users</h5>
+        <p class="display-6"><%= typeof usersCount !== 'undefined' ? usersCount : 0 %></p>
+        <a href="/super-admin/users" class="btn btn-info btn-sm">View All</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-receipt"></i> Recent Orders
+      </div>
+      <div class="card-body">
+        <% if(typeof recentOrders !== 'undefined' && recentOrders.length > 0) { %>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentOrders.forEach(function(order) { %>
+                <tr>
+                  <td><%= order._id.toString().slice(-6) %></td>
+                  <td><%= order.customerName || 'N/A' %></td>
+                  <td>$<%= order.total ? order.total.toFixed(2) : '0.00' %></td>
+                  <td>
+                    <span class="badge bg-<%= order.status === 'delivered' ? 'success' : order.status === 'pending' ? 'warning' : 'primary' %>">
+                      <%= order.status || 'pending' %>
+                    </span>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p class="text-muted mb-0">No recent orders</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-box-seam"></i> Latest Products
+      </div>
+      <div class="card-body">
+        <% if(typeof latestProducts !== 'undefined' && latestProducts.length > 0) { %>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% latestProducts.forEach(function(product) { %>
+                <tr>
+                  <td><%= product.name %></td>
+                  <td>$<%= product.price.toFixed(2) %></td>
+                  <td><%= product.stock || 'N/A' %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p class="text-muted mb-0">No products yet</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
