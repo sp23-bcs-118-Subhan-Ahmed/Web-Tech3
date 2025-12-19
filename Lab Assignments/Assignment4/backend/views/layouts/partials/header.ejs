@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1a3a3a;">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/logo-tooth.png" alt="Logo" width="40" height="40" class="me-2">
+      BeDentist
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about-us">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/healing">Healing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/technologies">Technologies</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/shop">Shop</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/cart">
+            �� Cart
+            <span class="badge bg-warning text-dark" id="cartCount">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact">Contact</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <% if(typeof user !== 'undefined' && user) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/my-account">My Account</a>
+          </li>
+          <% if(typeof isAdmin !== 'undefined' && isAdmin) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/super-admin">Admin Panel</a>
+            </li>
+          <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register">Register</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+

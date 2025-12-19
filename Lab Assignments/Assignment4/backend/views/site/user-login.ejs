@@ -1,0 +1,631 @@
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+    * { box-sizing: border-box; }
+
+    .auth-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a2e2a 0%, #0f1f1c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .auth-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        max-width: 450px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, #5ccdbe 0%, #3ba99a 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: white;
+    }
+
+    .auth-header .logo {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 40px;
+    }
+
+    .auth-header h1 { font-size: 28px; margin: 0 0 5px; }
+    .auth-header p { opacity: 0.9; margin: 0; }
+    .auth-body { padding: 30px; }
+
+    .login-type-section { display: block; }
+    .login-type-section.hidden { display: none; }
+    .login-type-title { text-align: center; color: #333; margin-bottom: 25px; font-size: 18px; }
+
+    .login-type-cards { display: flex; gap: 15px; }
+
+    .login-type-card {
+        flex: 1;
+        padding: 25px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: white;
+    }
+
+    .login-type-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .login-type-card .icon { font-size: 40px; margin-bottom: 12px; }
+    .login-type-card h3 { font-size: 16px; color: #333; margin: 0 0 5px; }
+    .login-type-card p { font-size: 12px; color: #888; margin: 0; }
+
+    .login-type-card.user-card:hover { border-color: #5ccdbe; background: linear-gradient(135deg, #f0fdfb 0%, #e8f8f6 100%); }
+    .login-type-card.admin-card:hover { border-color: #f4a261; background: linear-gradient(135deg, #fff9f5 0%, #fef5ef 100%); }
+
+    .auth-forms-section { display: none; }
+    .auth-forms-section.active { display: block; }
+
+    .back-to-selection {
+        display: flex; align-items: center; gap: 8px; color: #666; font-size: 14px;
+        cursor: pointer; margin-bottom: 20px; padding: 8px 12px; border-radius: 8px;
+        transition: all 0.3s; background: none; border: none;
+    }
+    .back-to-selection:hover { background: #f5f5f5; color: #333; }
+
+    .auth-tabs { display: flex; background: #f8f9fa; border-radius: 10px; padding: 5px; margin-bottom: 25px; }
+
+    .auth-tab {
+        flex: 1; padding: 12px; text-align: center; cursor: pointer;
+        font-weight: 600; color: #666; border: none; background: none;
+        transition: all 0.3s; border-radius: 8px;
+    }
+    .auth-tab.active { color: white; background: #5ccdbe; }
+    .auth-tab:hover:not(.active) { color: #5ccdbe; }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .form-group input { width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: all 0.3s; }
+    .form-group input:focus { border-color: #5ccdbe; outline: none; box-shadow: 0 0 0 3px rgba(92, 205, 190, 0.1); }
+
+    .btn-submit {
+        width: 100%; padding: 15px; background: linear-gradient(135deg, #5ccdbe 0%, #3ba99a 100%);
+        color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600;
+        cursor: pointer; transition: all 0.3s;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(92, 205, 190, 0.4); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .btn-submit.admin-btn { background: linear-gradient(135deg, #f4a261 0%, #e76f51 100%); }
+    .btn-submit.admin-btn:hover { box-shadow: 0 5px 20px rgba(244, 162, 97, 0.4); }
+
+    .divider { display: flex; align-items: center; margin: 20px 0; color: #999; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e0e0e0; }
+    .divider span { padding: 0 15px; font-size: 13px; }
+
+    .btn-google {
+        width: 100%; padding: 14px; background: white; border: 2px solid #e0e0e0; border-radius: 10px;
+        font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center;
+        justify-content: center; gap: 12px; transition: all 0.3s; color: #333;
+    }
+    .btn-google:hover { border-color: #4285f4; background: #f8f9ff; }
+    .btn-google img { width: 20px; height: 20px; }
+
+    .message { padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 14px; }
+    .message.success { background: #d4edda; color: #155724; display: block; }
+    .message.error { background: #f8d7da; color: #721c24; display: block; }
+
+    .back-link { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+    .back-link a { color: #5ccdbe; text-decoration: none; font-weight: 500; }
+    .back-link a:hover { text-decoration: underline; }
+
+    .password-toggle { position: relative; }
+    .password-toggle input { padding-right: 45px; }
+    .password-toggle .toggle-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #999; font-size: 18px; }
+
+    .user-profile-section { display: none; text-align: center; }
+    .user-profile-section.active { display: block; }
+
+    .user-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #5ccdbe 0%, #3ba99a 100%); display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin: 0 auto 20px; }
+    .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .user-info h2 { margin: 0 0 5px; color: #333; }
+    .user-info p { color: #666; margin: 0 0 25px; }
+
+    .profile-actions { display: flex; flex-direction: column; gap: 12px; }
+    .btn-profile { padding: 14px 20px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.3s; }
+    .btn-profile.primary { background: linear-gradient(135deg, #5ccdbe 0%, #3ba99a 100%); color: white; border: none; }
+    .btn-profile.secondary { background: white; color: #333; border: 2px solid #e0e0e0; }
+    .btn-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    .addresses-section { margin-top: 30px; text-align: left; }
+    .addresses-section h3 { margin-bottom: 15px; color: #333; font-size: 16px; }
+    .address-card { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative; }
+    .address-card .label { font-weight: 600; color: #5ccdbe; font-size: 12px; text-transform: uppercase; }
+    .address-card .address-text { margin: 5px 0 0; color: #333; font-size: 14px; }
+    .address-card .default-badge { position: absolute; top: 10px; right: 10px; background: #5ccdbe; color: white; padding: 3px 8px; border-radius: 5px; font-size: 11px; }
+    .address-card .delete-btn { position: absolute; bottom: 10px; right: 10px; background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 14px; }
+    .btn-add-address { width: 100%; padding: 12px; border: 2px dashed #ddd; background: white; border-radius: 10px; color: #666; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    .btn-add-address:hover { border-color: #5ccdbe; color: #5ccdbe; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 400px; width: 90%; }
+    .modal-content h3 { margin: 0 0 20px; }
+
+    .login-type-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 15px; }
+    .login-type-badge.user { background: #e8f8f6; color: #3ba99a; }
+    .login-type-badge.admin { background: #fef5ef; color: #e76f51; }
+
+    /* Orders Section */
+    .orders-section { margin-top: 25px; text-align: left; }
+    .orders-section h3 { margin-bottom: 15px; color: #333; font-size: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .orders-section h3 .refresh-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 5px; }
+    .order-card { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #5ccdbe; }
+    .order-card.pending { border-left-color: #f4a261; }
+    .order-card.processing { border-left-color: #3498db; }
+    .order-card.shipped { border-left-color: #9b59b6; }
+    .order-card.delivered { border-left-color: #27ae60; }
+    .order-card.cancelled { border-left-color: #e74c3c; }
+    .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .order-id { font-weight: 600; color: #333; font-size: 14px; }
+    .order-date { color: #888; font-size: 12px; }
+    .order-status { padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .order-status.pending { background: #fff3e0; color: #e65100; }
+    .order-status.processing { background: #e3f2fd; color: #1565c0; }
+    .order-status.shipped { background: #f3e5f5; color: #7b1fa2; }
+    .order-status.delivered { background: #e8f5e9; color: #2e7d32; }
+    .order-status.cancelled { background: #ffebee; color: #c62828; }
+    .order-items { font-size: 13px; color: #555; margin-bottom: 8px; }
+    .order-tracking { background: #fff; padding: 8px 12px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+    .order-tracking .label { font-size: 12px; color: #888; }
+    .order-tracking .number { font-weight: 600; color: #5ccdbe; font-size: 13px; letter-spacing: 1px; }
+    .order-tracking .copy-btn { background: #5ccdbe; color: white; border: none; padding: 4px 8px; border-radius: 5px; font-size: 11px; cursor: pointer; margin-left: auto; }
+    .order-total { font-weight: 600; color: #333; font-size: 14px; margin-top: 8px; }
+    .no-orders { text-align: center; padding: 30px; color: #888; }
+    .no-orders-icon { font-size: 40px; margin-bottom: 10px; }
+    .view-order-btn { width: 100%; padding: 8px; background: white; border: 1px solid #ddd; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 12px; color: #555; transition: all 0.3s; }
+    .view-order-btn:hover { border-color: #5ccdbe; color: #5ccdbe; }
+    .orders-loading { text-align: center; padding: 20px; color: #888; }
+</style>
+
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">🦷</div>
+            <h1>BeDent</h1>
+            <p>Your Dental Care Partner</p>
+        </div>
+
+        <div class="auth-body">
+            <!-- Login Type Selection -->
+            <div id="loginTypeSection" class="login-type-section">
+                <h2 class="login-type-title">Choose Login Type</h2>
+                <div class="login-type-cards">
+                    <div class="login-type-card user-card" onclick="showUserAuth()">
+                        <div class="icon">👤</div>
+                        <h3>Customer</h3>
+                        <p>Shop & track orders</p>
+                    </div>
+                    <div class="login-type-card admin-card" onclick="showAdminAuth()">
+                        <div class="icon">🔐</div>
+                        <h3>Admin</h3>
+                        <p>Manage store</p>
+                    </div>
+                </div>
+                <div class="back-link">
+                    <a href="/products">← Back to Shopping</a>
+                </div>
+            </div>
+
+            <!-- User Authentication Forms -->
+            <div id="userAuthSection" class="auth-forms-section">
+                <button class="back-to-selection" onclick="showLoginTypeSelection()">← Back</button>
+                <span class="login-type-badge user">👤 Customer Login</span>
+                <div id="userMessage" class="message"></div>
+
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchUserTab('login')">Login</button>
+                    <button class="auth-tab" onclick="switchUserTab('register')">Register</button>
+                </div>
+
+                <form id="userLoginForm" class="auth-form active" onsubmit="handleUserLogin(event)">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="userLoginEmail" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label>Password</label>
+                        <input type="password" id="userLoginPassword" required placeholder="Enter your password">
+                        <button type="button" class="toggle-btn" onclick="togglePassword('userLoginPassword')">👁️</button>
+                    </div>
+                    <button type="submit" class="btn-submit" id="userLoginBtn">Login</button>
+                    <div class="divider"><span>or continue with</span></div>
+                    <button type="button" class="btn-google" onclick="handleGoogleLogin()">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                        Continue with Google
+                    </button>
+                </form>
+
+                <form id="userRegisterForm" class="auth-form" onsubmit="handleUserRegister(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="regName" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="regEmail" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="regPhone" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" required minlength="6" placeholder="Create a password (min 6 chars)">
+                        <button type="button" class="toggle-btn" onclick="togglePassword('regPassword')">👁️</button>
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label>Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" required minlength="6" placeholder="Confirm your password">
+                        <button type="button" class="toggle-btn" onclick="togglePassword('regConfirmPassword')">👁️</button>
+                    </div>
+                    <button type="submit" class="btn-submit" id="registerBtn">Create Account</button>
+                    <div class="divider"><span>or continue with</span></div>
+                    <button type="button" class="btn-google" onclick="handleGoogleLogin()">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                        Continue with Google
+                    </button>
+                </form>
+            </div>
+
+            <!-- Admin Authentication Form -->
+            <div id="adminAuthSection" class="auth-forms-section">
+                <button class="back-to-selection" onclick="showLoginTypeSelection()">← Back</button>
+                <span class="login-type-badge admin">🔐 Admin Login</span>
+                <div id="adminMessage" class="message"></div>
+
+                <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                    <div class="form-group">
+                        <label>Admin Email</label>
+                        <input type="email" id="adminEmail" required placeholder="Enter admin email">
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label>Password</label>
+                        <input type="password" id="adminPassword" required placeholder="Enter password">
+                        <button type="button" class="toggle-btn" onclick="togglePassword('adminPassword')">👁️</button>
+                    </div>
+                    <button type="submit" class="btn-submit admin-btn" id="adminLoginBtn">Login to Admin Panel</button>
+                </form>
+                <div class="back-link" style="margin-top: 30px;">
+                    <p style="color: #999; font-size: 13px; margin: 0;">Admin access is restricted.<br>Contact administrator for credentials.</p>
+                </div>
+            </div>
+
+            <!-- User Profile -->
+            <div id="userProfileSection" class="user-profile-section">
+                <div class="user-avatar" id="userAvatar"><span id="avatarInitial">U</span></div>
+                <div class="user-info">
+                    <h2 id="userName">User Name</h2>
+                    <p id="userEmail">user@email.com</p>
+                </div>
+                <div class="profile-actions">
+                    <a href="/products" class="btn-profile primary">🛍️ Continue Shopping</a>
+                    <button class="btn-profile secondary" onclick="logout()">Logout</button>
+                </div>
+                <div class="orders-section">
+                    <h3>📦 My Orders <button class="refresh-btn" onclick="loadUserOrders()" title="Refresh">🔄</button></h3>
+                    <div id="ordersList">
+                        <div class="orders-loading">Loading orders...</div>
+                    </div>
+                </div>
+
+                <div class="addresses-section">
+                    <h3>📍 Saved Addresses</h3>
+                    <div id="addressesList"></div>
+                    <button class="btn-add-address" onclick="openAddressModal()">+ Add New Address</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div class="modal-overlay" id="addressModal">
+    <div class="modal-content">
+        <h3>Add New Address</h3>
+        <form onsubmit="saveAddress(event)">
+            <div class="form-group">
+                <label>Label</label>
+                <input type="text" id="addrLabel" placeholder="Home" value="Home">
+            </div>
+            <div class="form-group">
+                <label>Full Address *</label>
+                <input type="text" id="addrFull" required placeholder="Street, Building, etc.">
+            </div>
+            <div class="form-group">
+                <label>City *</label>
+                <input type="text" id="addrCity" required placeholder="City name">
+            </div>
+            <div class="form-group">
+                <label>Postal Code</label>
+                <input type="text" id="addrPostal" placeholder="Postal/ZIP code">
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="addrDefault"> Set as default
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-profile secondary" style="flex:1" onclick="closeAddressModal()">Cancel</button>
+                <button type="submit" class="btn-profile primary" style="flex:1">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:5000/api';
+
+    document.addEventListener('DOMContentLoaded', () => { checkLoginStatus(); });
+
+    function checkLoginStatus() {
+        const user = JSON.parse(localStorage.getItem('bedent_user') || 'null');
+        if (user && localStorage.getItem('bedent_token')) showUserProfile(user);
+    }
+
+    function showLoginTypeSelection() {
+        document.getElementById('loginTypeSection').classList.remove('hidden');
+        document.getElementById('userAuthSection').classList.remove('active');
+        document.getElementById('adminAuthSection').classList.remove('active');
+        hideMessages();
+    }
+
+    function showUserAuth() {
+        document.getElementById('loginTypeSection').classList.add('hidden');
+        document.getElementById('userAuthSection').classList.add('active');
+    }
+
+    function showAdminAuth() {
+        // Direct redirect to admin login page
+        window.location.href = '/super-admin/login';
+    }
+
+    function switchUserTab(tab) {
+        document.querySelectorAll('#userAuthSection .auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#userAuthSection .auth-form').forEach(f => f.classList.remove('active'));
+        if (tab === 'login') {
+            document.querySelector('#userAuthSection .auth-tab:first-child').classList.add('active');
+            document.getElementById('userLoginForm').classList.add('active');
+        } else {
+            document.querySelector('#userAuthSection .auth-tab:last-child').classList.add('active');
+            document.getElementById('userRegisterForm').classList.add('active');
+        }
+        hideMessages();
+    }
+
+    function showMessage(id, text, type) { const m = document.getElementById(id); m.textContent = text; m.className = `message ${type}`; }
+    function hideMessages() { document.getElementById('userMessage').className = 'message'; document.getElementById('adminMessage').className = 'message'; }
+    function togglePassword(id) { const i = document.getElementById(id); i.type = i.type === 'password' ? 'text' : 'password'; }
+
+    async function handleUserLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('userLoginBtn');
+        btn.disabled = true; btn.textContent = 'Logging in...';
+        try {
+            const res = await fetch(`${API_URL}/user/login`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: document.getElementById('userLoginEmail').value, password: document.getElementById('userLoginPassword').value })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('bedent_user', JSON.stringify(data.data));
+                localStorage.setItem('bedent_token', data.data.token);
+                showMessage('userMessage', 'Login successful!', 'success');
+                setTimeout(() => { window.location.href = new URLSearchParams(window.location.search).get('redirect') || '/products'; }, 1000);
+            } else { showMessage('userMessage', data.message, 'error'); }
+        } catch (e) { showMessage('userMessage', 'Login failed.', 'error'); }
+        finally { btn.disabled = false; btn.textContent = 'Login'; }
+    }
+
+    async function handleUserRegister(e) {
+        e.preventDefault();
+        const btn = document.getElementById('registerBtn');
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+        
+        if (password !== confirmPassword) {
+            showMessage('userMessage', 'Passwords do not match!', 'error');
+            return;
+        }
+        
+        btn.disabled = true; btn.textContent = 'Creating...';
+        try {
+            const res = await fetch(`${API_URL}/user/register`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: document.getElementById('regName').value, email: document.getElementById('regEmail').value, phone: document.getElementById('regPhone').value, password: password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('bedent_user', JSON.stringify(data.data));
+                localStorage.setItem('bedent_token', data.data.token);
+                showMessage('userMessage', 'Account created!', 'success');
+                setTimeout(() => { window.location.href = new URLSearchParams(window.location.search).get('redirect') || '/products'; }, 1000);
+            } else { showMessage('userMessage', data.message, 'error'); }
+        } catch (e) { showMessage('userMessage', 'Registration failed.', 'error'); }
+        finally { btn.disabled = false; btn.textContent = 'Create Account'; }
+    }
+
+    async function handleAdminLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('adminLoginBtn');
+        btn.disabled = true; btn.textContent = 'Logging in...';
+        // Submit as form to admin login
+        const form = document.createElement('form');
+        form.method = 'POST'; form.action = '/super-admin/login';
+        const eml = document.createElement('input'); eml.name = 'email'; eml.value = document.getElementById('adminEmail').value; form.appendChild(eml);
+        const pwd = document.createElement('input'); pwd.name = 'password'; pwd.value = document.getElementById('adminPassword').value; form.appendChild(pwd);
+        document.body.appendChild(form); form.submit();
+    }
+
+    function handleGoogleLogin() {
+        google.accounts.id.initialize({ client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', callback: handleGoogleCallback });
+        google.accounts.id.prompt();
+    }
+
+    async function handleGoogleCallback(response) {
+        try {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            const res = await fetch(`${API_URL}/user/google`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ googleId: payload.sub, email: payload.email, name: payload.name, avatar: payload.picture })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('bedent_user', JSON.stringify(data.data));
+                localStorage.setItem('bedent_token', data.data.token);
+                showMessage('userMessage', 'Google login successful!', 'success');
+                setTimeout(() => { window.location.href = new URLSearchParams(window.location.search).get('redirect') || '/products'; }, 1000);
+            } else { showMessage('userMessage', data.message, 'error'); }
+        } catch (e) { showMessage('userMessage', 'Google login failed.', 'error'); }
+    }
+
+    function showUserProfile(user) {
+        document.getElementById('loginTypeSection').classList.add('hidden');
+        document.getElementById('userAuthSection').classList.remove('active');
+        document.getElementById('adminAuthSection').classList.remove('active');
+        document.getElementById('userProfileSection').classList.add('active');
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('avatarInitial').textContent = user.name.charAt(0).toUpperCase();
+        if (user.avatar) document.getElementById('userAvatar').innerHTML = `<img src="${user.avatar}" alt="${user.name}">`;
+        loadAddresses();
+        loadUserOrders();
+    }
+
+    function logout() { localStorage.removeItem('bedent_user'); localStorage.removeItem('bedent_token'); window.location.reload(); }
+
+    async function loadAddresses() {
+        const token = localStorage.getItem('bedent_token'); if (!token) return;
+        try {
+            const res = await fetch(`${API_URL}/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            if (data.success && data.data.addresses) renderAddresses(data.data.addresses);
+        } catch (e) { console.error(e); }
+    }
+
+    function renderAddresses(addresses) {
+        const c = document.getElementById('addressesList');
+        if (!addresses.length) { c.innerHTML = '<p style="color:#999;text-align:center;padding:20px">No saved addresses</p>'; return; }
+        c.innerHTML = addresses.map(a => `<div class="address-card"><span class="label">${a.label}</span>${a.isDefault?'<span class="default-badge">Default</span>':''}<p class="address-text">${a.fullAddress}, ${a.city}${a.postalCode?' - '+a.postalCode:''}</p><button class="delete-btn" onclick="deleteAddress('${a._id}')">🗑️</button></div>`).join('');
+    }
+
+    function openAddressModal() { document.getElementById('addressModal').classList.add('active'); }
+    function closeAddressModal() { document.getElementById('addressModal').classList.remove('active'); document.getElementById('addrFull').value=''; document.getElementById('addrCity').value=''; document.getElementById('addrPostal').value=''; document.getElementById('addrLabel').value='Home'; document.getElementById('addrDefault').checked=false; }
+
+    async function saveAddress(e) {
+        e.preventDefault();
+        const token = localStorage.getItem('bedent_token'); if (!token) return;
+        try {
+            const res = await fetch(`${API_URL}/user/address`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ label: document.getElementById('addrLabel').value, fullAddress: document.getElementById('addrFull').value, city: document.getElementById('addrCity').value, postalCode: document.getElementById('addrPostal').value, isDefault: document.getElementById('addrDefault').checked })
+            });
+            const data = await res.json();
+            if (data.success) { closeAddressModal(); renderAddresses(data.data); const u = JSON.parse(localStorage.getItem('bedent_user')); u.addresses = data.data; localStorage.setItem('bedent_user', JSON.stringify(u)); }
+        } catch (e) { alert('Failed to save address'); }
+    }
+
+    async function deleteAddress(id) {
+        if (!confirm('Delete this address?')) return;
+        const token = localStorage.getItem('bedent_token'); if (!token) return;
+        try {
+            const res = await fetch(`${API_URL}/user/address/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            if (data.success) { renderAddresses(data.data); const u = JSON.parse(localStorage.getItem('bedent_user')); u.addresses = data.data; localStorage.setItem('bedent_user', JSON.stringify(u)); }
+        } catch (e) { alert('Failed to delete'); }
+    }
+
+    document.getElementById('addressModal').addEventListener('click', e => { if (e.target.id === 'addressModal') closeAddressModal(); });
+
+    // Load User Orders
+    async function loadUserOrders() {
+        const user = JSON.parse(localStorage.getItem('bedent_user'));
+        const container = document.getElementById('ordersList');
+        
+        console.log('Loading orders for user:', user);
+        
+        if (!user || !user.email) {
+            container.innerHTML = '<div class="no-orders"><div class="no-orders-icon">📦</div><p>No orders found</p></div>';
+            return;
+        }
+        
+        container.innerHTML = '<div class="orders-loading">Loading orders...</div>';
+        
+        try {
+            const url = `${API_URL}/orders/by-email/${encodeURIComponent(user.email)}`;
+            console.log('Fetching orders from:', url);
+            
+            const res = await fetch(url);
+            console.log('Response status:', res.status);
+            
+            const data = await res.json();
+            console.log('Orders data:', data);
+            
+            if (data.success && data.data && data.data.length > 0) {
+                renderOrders(data.data);
+            } else {
+                container.innerHTML = '<div class="no-orders"><div class="no-orders-icon">📦</div><p>No orders yet</p><a href="/products" style="color:#5ccdbe;font-size:14px;">Start Shopping →</a></div>';
+            }
+        } catch (e) {
+            console.error('Error loading orders:', e);
+            container.innerHTML = '<div class="no-orders"><div class="no-orders-icon">⚠️</div><p>Could not load orders</p></div>';
+        }
+    }
+
+    function renderOrders(orders) {
+        const container = document.getElementById('ordersList');
+        container.innerHTML = orders.map(order => {
+            const date = new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+            const itemsText = order.items.map(i => `${i.name} x${i.quantity}`).join(', ');
+            const shortItems = itemsText.length > 50 ? itemsText.substring(0, 50) + '...' : itemsText;
+            const status = order.status || 'pending';
+            const orderNumber = order.orderNumber || ('BD' + order._id.slice(-8).toUpperCase());
+            
+            return `
+                <div class="order-card ${status}">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">Order #${orderNumber}</div>
+                            <div class="order-date">${date}</div>
+                        </div>
+                        <span class="order-status ${status}">${status}</span>
+                    </div>
+                    <div class="order-items">${shortItems}</div>
+                    <div class="order-total">Total: Rs. ${order.total.toLocaleString()}</div>
+                    <div class="order-tracking">
+                        <span class="label">Order #:</span>
+                        <span class="number">${orderNumber}</span>
+                        <button class="copy-btn" onclick="copyTracking('${orderNumber}')">Copy</button>
+                    </div>
+                    <button class="view-order-btn" onclick="viewOrderDetails('${orderNumber}')">View Details</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function copyTracking(tracking) {
+        navigator.clipboard.writeText(tracking).then(() => {
+            alert('Order number copied: ' + tracking);
+        });
+    }
+
+    function viewOrderDetails(orderNumber) {
+        window.location.href = `/track-order?orderNumber=${orderNumber}`;
+    }
+</script>

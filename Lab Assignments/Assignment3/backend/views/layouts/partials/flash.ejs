@@ -1,0 +1,52 @@
+<% if(typeof success !== 'undefined' && success) { %>
+  <div class="alert alert-success alert-dismissible fade show auto-dismiss" role="alert">
+    <%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if(typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-danger alert-dismissible fade show auto-dismiss" role="alert">
+    <%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if(typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+  <div class="alert alert-danger alert-dismissible fade show auto-dismiss" role="alert">
+    <ul class="mb-0">
+      <% errors.forEach(function(err) { %>
+        <li><%= err.msg || err %></li>
+      <% }); %>
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<script>
+  // Auto-dismiss alerts after 5 seconds
+  document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert.auto-dismiss');
+    alerts.forEach(function(alert) {
+      setTimeout(function() {
+        if (alert && alert.classList.contains('show')) {
+          // Use Bootstrap's alert close method if available
+          if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          } else {
+            // Fallback: manual fade out and remove
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
+            setTimeout(function() {
+              alert.remove();
+            }, 500);
+          }
+        }
+      }, 5000); // 5 seconds
+    });
+  });
+</script>
+
+
+

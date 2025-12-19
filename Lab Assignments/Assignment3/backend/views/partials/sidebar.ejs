@@ -1,0 +1,24 @@
+<!-- Sidebar Navigation -->
+<aside class="sidebar" role="navigation" aria-label="Main Navigation">
+    <div class="sidebar-content">
+        <a href="/home" class="sidebar-logo" aria-label="BeDentist Home">
+            <img src="/images/logo-tooth.png" alt="BeDentist Logo" width="60" height="60">
+            <span class="logo-text">BEDENT</span>
+        </a>
+        
+        <nav class="sidebar-nav">
+            <ul class="sidebar-menu">
+                <li><a href="/home" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'active' : '' %>">Home</a></li>
+                <li><a href="/about-us" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'about' ? 'active' : '' %>">About us</a></li>
+                <li><a href="/healing" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'healing' ? 'active' : '' %>">Healing</a></li>
+                <li><a href="/technologies" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'technologies' ? 'active' : '' %>">Technologies</a></li>
+                <li><a href="/products" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'products' ? 'active' : '' %>">Products</a></li>
+                <li><a href="/contact" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'contact' ? 'active' : '' %>">Contact</a></li>
+                <li><a href="/track-order" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'track-order' ? 'active' : '' %>">Track Order</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+
+
+

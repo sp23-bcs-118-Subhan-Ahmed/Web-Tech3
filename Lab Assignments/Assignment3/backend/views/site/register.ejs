@@ -1,0 +1,134 @@
+<!-- Page Header -->
+<section class="page-header-with-bg" style="background-image: url('/images/home_dentist_subheader.jpg'); background-size: cover; background-position: center; padding: 80px 0; position: relative;">
+  <div class="container text-center text-white" style="position: relative; z-index: 2;">
+    <h1 style="font-family: Georgia, serif; font-size: 42px; font-style: italic; font-weight: 400;">Register</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Register</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body p-5">
+            <h3 class="text-center mb-4" style="color: #1a3a3a; font-family: Georgia, serif;">Create Account</h3>
+            
+            <%- include('../layouts/partials/flash') %>
+            
+            <form action="/register" method="POST">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input type="text" class="form-control" id="firstName" name="firstName" 
+                         placeholder="John" required
+                         value="<%= typeof firstName !== 'undefined' ? firstName : '' %>">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" id="lastName" name="lastName" 
+                         placeholder="Doe" required
+                         value="<%= typeof lastName !== 'undefined' ? lastName : '' %>">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                  <input type="email" class="form-control" id="email" name="email" 
+                         placeholder="you@example.com" required
+                         value="<%= typeof email !== 'undefined' ? email : '' %>">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number (Optional)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                  <input type="tel" class="form-control" id="phone" name="phone" 
+                         placeholder="+1 234 567 890"
+                         value="<%= typeof phone !== 'undefined' ? phone : '' %>">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                  <input type="password" class="form-control" id="password" name="password" 
+                         placeholder="Minimum 6 characters" required minlength="6">
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                    <i class="bi bi-eye" id="toggleIcon1"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                  <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                         placeholder="Repeat your password" required>
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword')">
+                    <i class="bi bi-eye" id="toggleIcon2"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="form-check mb-4">
+                <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                <label class="form-check-label" for="terms">
+                  I agree to the <a href="/terms" style="color: #1a3a3a;">Terms of Service</a> 
+                  and <a href="/privacy" style="color: #1a3a3a;">Privacy Policy</a>
+                </label>
+              </div>
+              
+              <% if(typeof redirect !== 'undefined' && redirect) { %>
+                <input type="hidden" name="redirect" value="<%= redirect %>">
+              <% } %>
+              
+              <button type="submit" class="btn w-100 py-2" style="background: linear-gradient(135deg, #1a3a3a 0%, #0d2626 100%); color: white; border: none;">
+                <i class="bi bi-person-plus"></i> Create Account
+              </button>
+            </form>
+            
+            <hr class="my-4">
+            
+            <p class="text-center mb-0">
+              Already have an account? 
+              <a href="/login<%= typeof redirect !== 'undefined' && redirect ? '?redirect=' + redirect : '' %>" 
+                 class="text-decoration-none" style="color: #1a3a3a;">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function togglePassword(inputId) {
+  const passwordInput = document.getElementById(inputId);
+  const toggleIcon = passwordInput.nextElementSibling.querySelector('i');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggleIcon.classList.remove('bi-eye');
+    toggleIcon.classList.add('bi-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    toggleIcon.classList.remove('bi-eye-slash');
+    toggleIcon.classList.add('bi-eye');
+  }
+}
+</script>
+
+
+

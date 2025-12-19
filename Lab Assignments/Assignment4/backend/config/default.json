@@ -1,0 +1,6 @@
+{
+  "port": 5000,
+  "jwtPrivateKey": "USE_ENV_VARIABLE",
+  "sessionSecret": "USE_ENV_VARIABLE",
+  "db": "USE_ENV_VARIABLE"
+}

@@ -1,0 +1,168 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="mb-0">Create New Admin</h5>
+  <a href="/super-admin/users" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Users
+  </a>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-person-plus"></i> Admin Account Details
+      </div>
+      <div class="card-body">
+        <% if(typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-circle"></i> <%= error %>
+          </div>
+        <% } %>
+        
+        <form action="/super-admin/users/create" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" required
+                   placeholder="Enter admin's full name"
+                   value="<%= typeof formData !== 'undefined' ? formData.name : '' %>">
+          </div>
+          
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" required
+                   placeholder="Enter admin's email"
+                   value="<%= typeof formData !== 'undefined' ? formData.email : '' %>">
+            <div class="form-text">This will be used for login</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password" name="password" required
+                     placeholder="Enter a strong password" minlength="6">
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', 'eyeIcon1')">
+                <i class="bi bi-eye" id="eyeIcon1"></i>
+              </button>
+            </div>
+            <div class="form-text">Minimum 6 characters</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required
+                     placeholder="Re-enter password" minlength="6">
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword', 'eyeIcon2')">
+                <i class="bi bi-eye" id="eyeIcon2"></i>
+              </button>
+            </div>
+            <div class="form-text text-danger" id="passwordError" style="display: none;">
+              <i class="bi bi-exclamation-circle"></i> Passwords do not match
+            </div>
+            <div class="form-text text-success" id="passwordMatch" style="display: none;">
+              <i class="bi bi-check-circle"></i> Passwords match
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number (Optional)</label>
+            <input type="tel" class="form-control" id="phone" name="phone"
+                   placeholder="Enter phone number"
+                   value="<%= typeof formData !== 'undefined' ? formData.phone : '' %>">
+          </div>
+          
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Note:</strong> This user will have full admin privileges and can access the admin panel.
+          </div>
+          
+          <hr>
+          
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/super-admin/users" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-person-plus"></i> Create Admin Account
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-shield-check"></i> Admin Privileges
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-3">New admin will have access to:</p>
+        <ul class="list-unstyled">
+          <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Dashboard</li>
+          <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Manage Products (CRUD)</li>
+          <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Manage Categories</li>
+          <li class="mb-2"><i class="bi bi-check-circle text-success"></i> View & Manage Orders</li>
+          <li class="mb-2"><i class="bi bi-check-circle text-success"></i> View & Manage Users</li>
+          <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Create New Admins</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Toggle password visibility
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.remove('bi-eye');
+    icon.classList.add('bi-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.remove('bi-eye-slash');
+    icon.classList.add('bi-eye');
+  }
+}
+
+// Password match validation
+document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+document.getElementById('password').addEventListener('input', checkPasswordMatch);
+
+function checkPasswordMatch() {
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const errorDiv = document.getElementById('passwordError');
+  const matchDiv = document.getElementById('passwordMatch');
+  const submitBtn = document.querySelector('button[type="submit"]');
+  
+  if (confirmPassword.length === 0) {
+    errorDiv.style.display = 'none';
+    matchDiv.style.display = 'none';
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    errorDiv.style.display = 'block';
+    matchDiv.style.display = 'none';
+    submitBtn.disabled = true;
+  } else {
+    errorDiv.style.display = 'none';
+    matchDiv.style.display = 'block';
+    submitBtn.disabled = false;
+  }
+}
+
+// Form validation before submit
+document.querySelector('form').addEventListener('submit', function(e) {
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  
+  if (password !== confirmPassword) {
+    e.preventDefault();
+    alert('Passwords do not match!');
+    return false;
+  }
+});
+</script>
+
